@@ -1,0 +1,102 @@
+@model TavernViewModel
+@{
+    ViewData["Title"] = "Tavern";
+    var message = TempData["Message"]?.ToString() ?? "";
+}
+
+<div class="hero">
+    <div class="hero-inner">
+        <h1>The Golden Dragon</h1>
+        <p class="hero-sub">TavernQuest &middot; ASP.NET Core MVC</p>
+    </div>
+</div>
+
+<div class="container">
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert">@message</div>
+    }
+
+    <div class="grid">
+
+        <div class="card card--singleton">
+            <div class="card-top">
+                <span class="lifetime lifetime--singleton">Singleton</span>
+                <span class="card-title">TavernKeeperService</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">Innkeeper</span>
+                    <span class="stat-val">@Model.KeeperName</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Visitors</span>
+                    <span class="stat-val stat-val--accent">@Model.TotalVisitors</span>
+                </div>
+            </div>
+            <form method="post" action="/Tavern/Enter">
+                <button type="submit" class="btn btn--purple">Enter the Tavern</button>
+            </form>
+        </div>
+
+        <div class="card card--scoped">
+            <div class="card-top">
+                <span class="lifetime lifetime--scoped">Scoped</span>
+                <span class="card-title">VisitService</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">Visit ID</span>
+                    <span class="stat-val stat-val--mono">@Model.VisitId</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Orders</span>
+                    <span class="stat-val stat-val--accent">@Model.Orders.Count</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Bill</span>
+                    <span class="stat-val stat-val--accent">@Model.TotalBill.ToString("C")</span>
+                </div>
+            </div>
+            @if (Model.Orders.Any())
+            {
+                <ul class="order-list">
+                    @foreach (var order in Model.Orders)
+                    {
+                        <li>@order</li>
+                    }
+                </ul>
+            }
+            <form method="post" action="/Tavern/AddOrder" class="form-row">
+                <input type="text" name="Item" placeholder="Item name" required />
+                <input type="number" name="Price" placeholder="Price" step="0.01" min="0.01" required />
+                <button type="submit" class="btn btn--green">Order</button>
+            </form>
+        </div>
+
+        <div class="card card--transient">
+            <div class="card-top">
+                <span class="lifetime lifetime--transient">Transient</span>
+                <span class="card-title">DiceService</span>
+            </div>
+            <div class="dice-display">
+                <span class="dice-value">@Model.DiceD20</span>
+                <span class="dice-face">d20</span>
+            </div>
+            <form method="post" action="/Tavern/RollDice" class="form-dice">
+                <div class="dice-picker">
+                    @foreach (var d in new[] { 4, 6, 8, 12, 20, 100 })
+                    {
+                        <label class="dice-opt">
+                            <input type="radio" name="sides" value="@d" @(d == 20 ? "checked" : "") />
+                            <span>d@(d)</span>
+                        </label>
+                    }
+                </div>
+                <button type="submit" class="btn btn--amber">Roll</button>
+            </form>
+        </div>
+
+    </div>
+</div>
